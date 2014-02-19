@@ -43,7 +43,7 @@
                     var n1 = this.magnitude*20
                     var width = this.paper.width - 10, height = this.paper.height
 
-                    this.circle.attr( { 'cx': 7*20 + 10, 'cy': height/2, 'r': Math.abs(n1), 'fill': '#ffcc00' } )
+                    this.circle.attr( { 'cx': 7*20 + 10, 'cy': height/2, 'r': Math.abs(n1) } )
 
                     this.circle_point.attr( { 'cx': 7*20 + 10 + this.circle.attrs.r*Math.cos(this.x_value*this.frequency + this.phase), 'cy': height/2 + this.circle.attrs.r*Math.sin(-this.x_value*this.frequency + this.phase), 'fill': '#00ccff' } )
                     this.sine_point.attr( { 'cx': width/2 + width/2*(this.x_value / (2*Math.PI)), 'cy': height/2 + this.circle.attrs.r*Math.sin(-this.x_value*this.frequency + this.phase), 'fill': '#00ccff' } )
@@ -104,12 +104,17 @@
                     this.phases = [0, 0]
                     this.paper = new Raphael(document.getElementById('graph-3'), 700, 300)
                     this.sine_waves = [this.paper.path(''), this.paper.path(''), this.paper.path('')]
+                    this.sine_waves[0].attr( { 'stroke': 'red', 'stroke-width': 3 } )
+                    this.sine_waves[1].attr( { 'stroke': 'blue', 'stroke-width': 3 } )
+                    this.sine_waves[2].attr( { 'stroke': 'purple', 'stroke-width': 3 } )
                     this.circles = [this.paper.circle( 0, 0, 0 ), this.paper.circle( 0, 0, 0 )]
-                    this.circles[0].attr( { 'stroke-width': 2 } )
-                    this.circles[1].attr( { 'stroke-width': 2 } )
+                    this.circles[0].attr( { 'stroke-width': 2, 'stroke': 'red' } )
+                    this.circles[1].attr( { 'stroke-width': 2, 'stroke': 'blue' } )
                     this.connecting_lines = [this.paper.rect( 0, 0, 0, 2 ), this.paper.rect( 0, 0, 0, 2 )]
+                    this.connecting_lines[0].attr( { 'stroke': 'red', 'fill': 'red' } )
+                    this.connecting_lines[1].attr( { 'stroke': 'blue', 'fill': 'blue' } )
                     this.circle_points = [this.paper.circle( 0, 0, 7 ), this.paper.circle( 0, 0, 7 )]
-                    this.sine_point = this.paper.circle( 0, 0, 7 )
+                    this.sine_points = [this.paper.circle( 0, 0, 7 ), this.paper.circle( 0, 0, 7 ), this.paper.circle( 0, 0, 7 )]
 
                     for(var i = 0; i < this.circles.length; ++i) {
                         eval('this.phases' + i.toString() + ' = ' + this.phases[i].toString())
@@ -125,6 +130,7 @@
                     }
 
                     var width = this.paper.width - 10, height = this.paper.height
+                    var colors = ['red', 'blue']
 
                     this.circles[0].attr( { 'cx': 7*20 + 10, 'cy': height/2, 'r': Math.abs(this.magnitudes[0]*20) } )
                     for(var i = 1; i < this.circles.length; ++i) {
@@ -132,17 +138,22 @@
                     }
 
                     for(var i = 0; i < this.circle_points.length; i++) {
-                        this.circle_points[i].attr( { 'cx': this.circles[i].attrs.cx + this.circles[i].attrs.r*Math.cos(this.x_value*this.frequencies[i] + this.phases[i]), 'cy': this.circles[i].attrs.cy + this.circles[i].attrs.r*Math.sin(-this.x_value*this.frequencies[i] + this.phases[i]), 'fill': '#00ccff' } )
+                        this.circle_points[i].attr( { 'cx': this.circles[i].attrs.cx + this.circles[i].attrs.r*Math.cos(this.x_value*this.frequencies[i] + this.phases[i]), 'cy': this.circles[i].attrs.cy + this.circles[i].attrs.r*Math.sin(-this.x_value*this.frequencies[i] + this.phases[i]), 'fill': colors[i] } )
                     }
                     
                     var y_val = height/2
                     for(var j = 0; j < this.circles.length; ++j) {
                         y_val += this.circles[j].attrs.r*Math.sin(-this.x_value*this.frequencies[j] - this.phases[j])
                     }
-                    this.sine_point.attr( { 'cx': width/2 + width/2*(this.x_value / (2*Math.PI)), 'cy': y_val, 'fill': '#00ccff' } )
+
+                    for(var i = 0; i < this.sine_points.length - 1; ++i) {
+                        this.sine_points[i].attr( { 'cx': width/2 + width/2*(this.x_value / (2*Math.PI)), 'cy': height/2 + this.circles[i].attrs.r*Math.sin(-this.x_value*this.frequencies[i] - this.phases[i]), 'fill': colors[i] } )
+                    }
+                    this.sine_points[this.sine_points.length - 1].attr( { 'cx': width/2 + width/2*(this.x_value / (2*Math.PI)), 'cy': y_val, 'fill': 'purple' } )
+
 
                     for(var i = 0; i < this.connecting_lines.length; ++i) {
-                        this.connecting_lines[i].attr( { 'x': this.circle_points[i].attrs.cx, 'y': this.circle_points[i].attrs.cy, 'width': this.sine_point.attrs.cx - this.circle_points[i].attrs.cx } )
+                        this.connecting_lines[i].attr( { 'x': this.circle_points[i].attrs.cx, 'y': this.circle_points[i].attrs.cy, 'width': this.sine_points[i].attrs.cx - this.circle_points[i].attrs.cx } )
                     }
 
                     for(var wave_num = 0; wave_num < this.sine_waves.length - 1; ++wave_num) {
@@ -156,6 +167,19 @@
                             'path': path_str
                         } )
                     }
+
+                    var path_str_sum = 'M' + (width/2).toString() + ',' + (height/2).toString()
+                    for(var i = 0; i < width/2; ++i) {
+                        var y_val = height/2
+                        for(var j = 0; j < this.circles.length; ++j) {
+                            y_val += this.circles[j].attrs.r*Math.sin(-i*2*Math.PI/(width/2)*this.frequencies[j] - this.phases[j])
+                        }
+                        path_str_sum += 'L' + (width/2 + i).toString() + ',' + y_val.toString()
+                    }
+                    this.sine_waves[this.sine_waves.length - 1].attr( { 
+                        'path': path_str_sum
+                    } )
+
                 }
             });
 

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Fuck You</title>
+
+    <script type="text/javascript" src="raphael.js"></script>
+
+    <!-- Tangle -->
+    <script type="text/javascript" src="Tangle.js"></script>
+
+    <!-- TangleKit (optional) -->
+    <link rel="stylesheet" href="TangleKit/TangleKit.css" type="text/css">
+    <script type="text/javascript" src="TangleKit/mootools.js"></script>
+    <script type="text/javascript" src="TangleKit/sprintf.js"></script>
+    <script type="text/javascript" src="TangleKit/BVTouchable.js"></script>
+    <script type="text/javascript" src="TangleKit/TangleKit.js"></script>
+
+    <!-- example -->
+    <script type="text/javascript">
+
+        function setUpTangle () {
+
+            var ex1 = document.getElementById("ex1");
+
+            var tangle1 = new Tangle(ex1, {
+                initialize: function () {
+                    this.magnitude = 4
+                    this.frequency = 1
+                    this.x_value = 0
+                    this.phase = 0
+                    this.paper = new Raphael(document.getElementById('graph'), 700, 300)
+                    this.sine_wave = this.paper.path('')
+                    this.sine_wave.attr( { 'stroke-width': 2 } )
+                    this.circle = this.paper.circle( 0, 0, 0 )
+                    this.circle.attr( { 'stroke-width': 2 } )
+                    this.connecting_line = this.paper.rect( 0, 0, 0, 2 )
+                    this.connecting_line.attr( { 'fill': 'black' } )
+                    this.circle_point = this.paper.circle( 0, 0, 7 )
+                    this.sine_point = this.paper.circle( 0, 0, 7 )
+                },
+                update: function () {
+                    var n1 = this.magnitude*20
+                    var width = this.paper.width - 10, height = this.paper.height
+
+                    this.circle.attr( { 'cx': 7*20 + 10, 'cy': height/2, 'r': Math.abs(n1), 'fill': '#ffcc00' } )
+
+                    this.circle_point.attr( { 'cx': 7*20 + 10 + this.circle.attrs.r*Math.cos(this.x_value*this.frequency + this.phase), 'cy': height/2 + this.circle.attrs.r*Math.sin(-this.x_value*this.frequency + this.phase), 'fill': '#00ccff' } )
+                    this.sine_point.attr( { 'cx': width/2 + width/2*(this.x_value / (2*Math.PI)), 'cy': height/2 + this.circle.attrs.r*Math.sin(-this.x_value*this.frequency + this.phase), 'fill': '#00ccff' } )
+
+                    this.connecting_line.attr( { 'x': this.circle_point.attrs.cx, 'y': this.circle_point.attrs.cy, 'width': this.sine_point.attrs.cx - this.circle_point.attrs.cx } )
+
+                    var path_str = 'M' + width/2 + ',' + (n1*Math.sin(-2*Math.PI*0 / (width/2)*this.frequency + this.phase) + height/2).toString()
+                    for(var i = 0; i < width/2; ++i) {
+                        path_str += 'L' + (width/2 + i).toString() + ',' + (n1*Math.sin(-2*Math.PI*i / (width/2)*this.frequency + this.phase) + height/2).toString()
+                    }
+                    this.sine_wave.attr( { 
+                        'path': path_str
+                    } )
+                }
+            });
+
+            var tangle2 = new Tangle(ex2, {
+                initialize: function () {
+                    this.magnitude = 4
+                    this.frequency = 1
+                    this.x_value = 0
+                    this.phase = 0
+                    this.paper = new Raphael(document.getElementById('graph-2'), 700, 300)
+                    this.circle = this.paper.circle( 0, 0, 0 )
+                    this.circle.attr( { 'stroke-width': 2 } )
+                    this.x_line = this.paper.path( '' )
+                    this.x_line.attr( { 'fill': 'black' } )
+                    this.y_line = this.paper.path( '' )
+                    this.y_line.attr( { 'fill': 'black' } )
+                    this.hypotenuse = this.paper.path( '' )
+                    this.hypotenuse.attr( { 'fill': 'black' } )
+                    this.circle_point = this.paper.circle( 0, 0, 7 )
+                    this.sin_val = 0
+                    this.cos_val = 0
+                },
+                update: function () {
+                    var n1 = this.magnitude*20
+                    var width = this.paper.width - 10, height = this.paper.height
+
+                    this.circle.attr( { 'cx': 7*20 + 10, 'cy': height/2, 'r': Math.abs(n1) } )
+
+                    this.circle_point.attr( { 'cx': 7*20 + 10 + this.circle.attrs.r*Math.cos(this.x_value*this.frequency + this.phase), 'cy': height/2 + this.circle.attrs.r*Math.sin(-this.x_value*this.frequency + this.phase), 'fill': '#00ccff' } )
+
+                    this.x_line.attr( { 'path': 'M' + this.circle.attrs.cx.toString() + ',' + this.circle.attrs.cy.toString() + 'L' + this.circle_point.attrs.cx.toString() + ',' + this.circle.attrs.cy.toString() } )
+                    this.y_line.attr( { 'path': 'M' + this.circle_point.attrs.cx.toString() + ',' + this.circle.attrs.cy.toString() + 'L' + this.circle_point.attrs.cx.toString() + ',' + this.circle_point.attrs.cy.toString() } )
+                    this.hypotenuse.attr( { 'path': 'M' + this.circle.attrs.cx.toString() + ',' + this.circle.attrs.cy.toString() + 'L' + this.circle_point.attrs.cx.toString() + ',' + this.circle_point.attrs.cy.toString() } )
+
+                    this.sin_val = Math.cos( 2*Math.PI * this.x_value )
+                    this.cos_val = Math.sin( 2*Math.PI * this.x_value )
+                }
+            });
+
+            var tangle3 = new Tangle(ex3, {
+                initialize: function () {
+                    this.magnitudes = [4, 2]
+                    this.frequencies = [2, 1]
+                    this.x_value = 0
+                    this.phases = [0, 0]
+                    this.paper = new Raphael(document.getElementById('graph-3'), 700, 300)
+                    this.sine_waves = [this.paper.path(''), this.paper.path(''), this.paper.path('')]
+                    this.circles = [this.paper.circle( 0, 0, 0 ), this.paper.circle( 0, 0, 0 )]
+                    this.circles[0].attr( { 'stroke-width': 2 } )
+                    this.circles[1].attr( { 'stroke-width': 2 } )
+                    this.connecting_lines = [this.paper.rect( 0, 0, 0, 2 ), this.paper.rect( 0, 0, 0, 2 )]
+                    this.circle_points = [this.paper.circle( 0, 0, 7 ), this.paper.circle( 0, 0, 7 )]
+                    this.sine_point = this.paper.circle( 0, 0, 7 )
+
+                    for(var i = 0; i < this.circles.length; ++i) {
+                        eval('this.phases' + i.toString() + ' = ' + this.phases[i].toString())
+                        eval('this.magnitudes' + i.toString() + ' = ' + this.magnitudes[i].toString())
+                        eval('this.frequencies' + i.toString() + ' = ' + this.frequencies[i].toString())
+                    }
+                },
+                update: function () {
+                    for(var i = 0; i < this.circles.length; ++i) {
+                        eval('this.phases[' + i.toString() + '] = this.phases' + i.toString())
+                        eval('this.magnitudes[' + i.toString() + '] = this.magnitudes' + i.toString())
+                        eval('this.frequencies[' + i.toString() + '] = this.frequencies' + i.toString())
+                    }
+
+                    var width = this.paper.width - 10, height = this.paper.height
+
+                    this.circles[0].attr( { 'cx': 7*20 + 10, 'cy': height/2, 'r': Math.abs(this.magnitudes[0]*20) } )
+                    for(var i = 1; i < this.circles.length; ++i) {
+                        this.circles[i].attr( { 'cx': this.circles[0].attrs.cx, 'cy': this.circles[0].attrs.cy, 'r': Math.abs(this.magnitudes[i]*20) } )
+                    }
+
+                    for(var i = 0; i < this.circle_points.length; i++) {
+                        this.circle_points[i].attr( { 'cx': this.circles[i].attrs.cx + this.circles[i].attrs.r*Math.cos(this.x_value*this.frequencies[i] + this.phases[i]), 'cy': this.circles[i].attrs.cy + this.circles[i].attrs.r*Math.sin(-this.x_value*this.frequencies[i] + this.phases[i]), 'fill': '#00ccff' } )
+                    }
+                    
+                    var y_val = height/2
+                    for(var j = 0; j < this.circles.length; ++j) {
+                        y_val += this.circles[j].attrs.r*Math.sin(-this.x_value*this.frequencies[j] - this.phases[j])
+                    }
+                    this.sine_point.attr( { 'cx': width/2 + width/2*(this.x_value / (2*Math.PI)), 'cy': y_val, 'fill': '#00ccff' } )
+
+                    for(var i = 0; i < this.connecting_lines.length; ++i) {
+                        this.connecting_lines[i].attr( { 'x': this.circle_points[i].attrs.cx, 'y': this.circle_points[i].attrs.cy, 'width': this.sine_point.attrs.cx - this.circle_points[i].attrs.cx } )
+                    }
+
+                    for(var wave_num = 0; wave_num < this.sine_waves.length - 1; ++wave_num) {
+                        var path_str = 'M' + width/2 + ',' + (this.magnitudes[wave_num]*20*Math.sin(2*Math.PI*0 / (width/2)*this.frequencies[wave_num] + this.phases[wave_num]) + height/2).toString()
+                        for(var i = 0; i < width/2; ++i) {
+                            var y_val = height/2
+                            y_val += this.circles[wave_num].attrs.r*Math.sin(-i*2*Math.PI/(width/2)*this.frequencies[wave_num] - this.phases[wave_num])
+                            path_str += 'L' + (width/2 + i).toString() + ',' + y_val.toString()
+                        }
+                        this.sine_waves[wave_num].attr( { 
+                            'path': path_str
+                        } )
+                    }
+                }
+            });
+
+            var tangle4 = new Tangle(ex4, {
+                initialize: function () {
+                    this.magnitudes = [4, 2]
+                    this.frequencies = [2, 1]
+                    this.x_value = 0
+                    this.phases = [0, 0]
+                    this.paper = new Raphael(document.getElementById('graph-4'), 700, 300)
+                    this.sine_wave = this.paper.path('')
+                    this.sine_wave.attr( { 'stroke-width': 2 } )
+                    this.circles = [this.paper.circle( 0, 0, 0 ), this.paper.circle( 0, 0, 0 )]
+                    this.circles[0].attr( { 'stroke-width': 2 } )
+                    this.circles[1].attr( { 'stroke-width': 2 } )
+                    this.connecting_line = this.paper.rect( 0, 0, 0, 2 )
+                    this.connecting_line.attr( { 'fill': 'black' } )
+                    this.circle_point = this.paper.circle( 0, 0, 7 )
+                    this.sine_point = this.paper.circle( 0, 0, 7 )
+
+                    for(var i = 0; i < this.circles.length; ++i) {
+                        eval('this.phases' + i.toString() + ' = ' + this.phases[i].toString())
+                        eval('this.magnitudes' + i.toString() + ' = ' + this.magnitudes[i].toString())
+                        eval('this.frequencies' + i.toString() + ' = ' + this.frequencies[i].toString())
+                    }
+                },
+                update: function () {
+                    for(var i = 0; i < this.circles.length; ++i) {
+                        eval('this.phases[' + i.toString() + '] = this.phases' + i.toString())
+                        eval('this.magnitudes[' + i.toString() + '] = this.magnitudes' + i.toString())
+                        eval('this.frequencies[' + i.toString() + '] = this.frequencies' + i.toString())
+                    }
+
+                    var width = this.paper.width - 10, height = this.paper.height
+
+                    this.circles[0].attr( { 'cx': 7*20 + 10, 'cy': height/2, 'r': Math.abs(this.magnitudes[0]*20) } )
+                    for(var i = 1; i < this.circles.length; ++i) {
+                        this.circles[i].attr( { 'cx': this.circles[i - 1].attrs.cx + this.circles[i - 1].attrs.r*Math.cos(this.x_value*this.frequencies[i - 1] + this.phases[i - 1]), 'cy': this.circles[i - 1].attrs.cy + this.circles[i - 1].attrs.r*Math.sin(-this.x_value*this.frequencies[i - 1] - this.phases[i - 1]), 'r': Math.abs(this.magnitudes[i]*20) } )
+                    }
+
+                    this.circle_point.attr( { 'cx': this.circles[this.circles.length - 1].attrs.cx + this.circles[this.circles.length - 1].attrs.r*Math.cos(this.x_value*this.frequencies[this.circles.length - 1] + this.phases[this.circles.length - 1]), 'cy': this.circles[this.circles.length - 1].attrs.cy + this.circles[this.circles.length - 1].attrs.r*Math.sin(-this.x_value*this.frequencies[this.circles.length - 1] + this.phases[this.circles.length - 1]), 'fill': '#00ccff' } )
+                    
+                    var y_val = height/2
+                    for(var j = 0; j < this.circles.length; ++j) {
+                        y_val += this.circles[j].attrs.r*Math.sin(-this.x_value*this.frequencies[j] - this.phases[j])
+                    }
+                    this.sine_point.attr( { 'cx': width/2 + width/2*(this.x_value / (2*Math.PI)), 'cy': y_val, 'fill': '#00ccff' } )
+
+                    this.connecting_line.attr( { 'x': this.circle_point.attrs.cx, 'y': this.circle_point.attrs.cy, 'width': this.sine_point.attrs.cx - this.circle_point.attrs.cx } )
+
+                    var path_str = 'M' + width/2 + ',' + (this.magnitudes[0]*20*Math.sin(2*Math.PI*0 / (width/2)*this.frequencies[0] + this.phases[0]) + height/2).toString()
+                    for(var i = 0; i < width/2; ++i) {
+                        var y_val = height/2
+                        for(var j = 0; j < this.circles.length; ++j) {
+                            y_val += this.circles[j].attrs.r*Math.sin(-i*2*Math.PI/(width/2)*this.frequencies[j] - this.phases[j])
+                        }
+                        path_str += 'L' + (width/2 + i).toString() + ',' + y_val.toString()
+                    }
+                    this.sine_wave.attr( { 
+                        'path': path_str
+                    } )
+                }
+            });
+
+        }
+
+    </script>
+
+</head>
+
+<body onload="setUpTangle();">
+
+    <p id="ex1">Graph of f(<span class="TKAdjustableNumber" data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) = <span data-var="magnitude" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequency" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phase" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>)</p>
+    <div id="graph" resize="true"></div>
+
+    <p id="ex3">Real part of f(<span class="TKAdjustableNumber" data-format="%0.01f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span>) = <span data-var="magnitudes0" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies0" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases0" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>) + <span data-var="magnitudes1" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies1" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases1" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>)</p>
+    <div id="graph-3" resize="true"></div>
+
+    <p id="ex4">Real part of f(<span class="TKAdjustableNumber" data-format="%0.01f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span>) = <span data-var="magnitudes0" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies0" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases0" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>) + <span data-var="magnitudes1" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies1" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases1" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>)</p>
+    <div id="graph-4" resize="true"></div>
+
+    <p id="ex2">Graph of e^(i * <span class="TKAdjustableNumber" data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) = cos(<span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) + i*sin(<span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) = <span data-format="%0.01f" data-var="sin_val" data-step="0.1" data-max="6.283" data-min="0"></span> + i*<span data-format="%0.01f" data-var="cos_val" data-step="0.1" data-max="6.283" data-min="0"></span></p>
+    <div id="graph-2" resize="true"></div>
+
+</body>
+
+</html>

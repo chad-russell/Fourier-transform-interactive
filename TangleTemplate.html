@@ -4,6 +4,39 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Fuck You</title>
 
+    <style>
+    h1{
+        margin-top: 75px;
+        text-align: center;
+        font-family: "helvetica";
+        color: #333;
+    }
+    h2{
+        text-align: center;
+        font-family: "helvetica";
+        margin-top: 50px;
+        color: #333;
+    }
+    p{
+        margin-left: 15%;
+        margin-right: 15%;
+        font-family: "helvetica";
+        line-height: 180%;
+        color: #333;
+    }
+    div {
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+    }
+    div.break {
+        height: 1px;
+        width: 80%;
+        background-color: #ccc;
+        margin-left: 10%;
+    }
+    </style>
+    
     <script type="text/javascript" src="raphael.js"></script>
 
     <!-- Tangle -->
@@ -16,254 +49,104 @@
     <script type="text/javascript" src="TangleKit/BVTouchable.js"></script>
     <script type="text/javascript" src="TangleKit/TangleKit.js"></script>
 
-    <!-- example -->
-    <script type="text/javascript">
+    <!-- Set up examples -->
+    <script type="text/javascript" src="tangle_setup.js"></script>
 
-        function setUpTangle () {
+    <!-- Band-pass filter demo -->
+    <script type="text/javascript" src="events.js"></script>
+    <script type="text/javascript" src="filter.js"></script>
 
-            var ex1 = document.getElementById("ex1");
-
-            var tangle1 = new Tangle(ex1, {
-                initialize: function () {
-                    this.magnitude = 4
-                    this.frequency = 1
-                    this.x_value = 0
-                    this.phase = 0
-                    this.paper = new Raphael(document.getElementById('graph'), 700, 300)
-                    this.sine_wave = this.paper.path('')
-                    this.sine_wave.attr( { 'stroke-width': 2 } )
-                    this.circle = this.paper.circle( 0, 0, 0 )
-                    this.circle.attr( { 'stroke-width': 2 } )
-                    this.connecting_line = this.paper.rect( 0, 0, 0, 2 )
-                    this.connecting_line.attr( { 'fill': 'black' } )
-                    this.circle_point = this.paper.circle( 0, 0, 7 )
-                    this.sine_point = this.paper.circle( 0, 0, 7 )
-                },
-                update: function () {
-                    var n1 = this.magnitude*20
-                    var width = this.paper.width - 10, height = this.paper.height
-
-                    this.circle.attr( { 'cx': 7*20 + 10, 'cy': height/2, 'r': Math.abs(n1) } )
-
-                    this.circle_point.attr( { 'cx': 7*20 + 10 + this.circle.attrs.r*Math.cos(this.x_value*this.frequency + this.phase), 'cy': height/2 + this.circle.attrs.r*Math.sin(-this.x_value*this.frequency + this.phase), 'fill': '#00ccff' } )
-                    this.sine_point.attr( { 'cx': width/2 + width/2*(this.x_value / (2*Math.PI)), 'cy': height/2 + this.circle.attrs.r*Math.sin(-this.x_value*this.frequency + this.phase), 'fill': '#00ccff' } )
-
-                    this.connecting_line.attr( { 'x': this.circle_point.attrs.cx, 'y': this.circle_point.attrs.cy, 'width': this.sine_point.attrs.cx - this.circle_point.attrs.cx } )
-
-                    var path_str = 'M' + width/2 + ',' + (n1*Math.sin(-2*Math.PI*0 / (width/2)*this.frequency + this.phase) + height/2).toString()
-                    for(var i = 0; i < width/2; ++i) {
-                        path_str += 'L' + (width/2 + i).toString() + ',' + (n1*Math.sin(-2*Math.PI*i / (width/2)*this.frequency + this.phase) + height/2).toString()
-                    }
-                    this.sine_wave.attr( { 
-                        'path': path_str
-                    } )
-                }
-            });
-
-            var tangle2 = new Tangle(ex2, {
-                initialize: function () {
-                    this.magnitude = 4
-                    this.frequency = 1
-                    this.x_value = 0
-                    this.phase = 0
-                    this.paper = new Raphael(document.getElementById('graph-2'), 700, 300)
-                    this.circle = this.paper.circle( 0, 0, 0 )
-                    this.circle.attr( { 'stroke-width': 2 } )
-                    this.x_line = this.paper.path( '' )
-                    this.x_line.attr( { 'fill': 'black' } )
-                    this.y_line = this.paper.path( '' )
-                    this.y_line.attr( { 'fill': 'black' } )
-                    this.hypotenuse = this.paper.path( '' )
-                    this.hypotenuse.attr( { 'fill': 'black' } )
-                    this.circle_point = this.paper.circle( 0, 0, 7 )
-                    this.sin_val = 0
-                    this.cos_val = 0
-                },
-                update: function () {
-                    var n1 = this.magnitude*20
-                    var width = this.paper.width - 10, height = this.paper.height
-
-                    this.circle.attr( { 'cx': 7*20 + 10, 'cy': height/2, 'r': Math.abs(n1) } )
-
-                    this.circle_point.attr( { 'cx': 7*20 + 10 + this.circle.attrs.r*Math.cos(this.x_value*this.frequency + this.phase), 'cy': height/2 + this.circle.attrs.r*Math.sin(-this.x_value*this.frequency + this.phase), 'fill': '#00ccff' } )
-
-                    this.x_line.attr( { 'path': 'M' + this.circle.attrs.cx.toString() + ',' + this.circle.attrs.cy.toString() + 'L' + this.circle_point.attrs.cx.toString() + ',' + this.circle.attrs.cy.toString() } )
-                    this.y_line.attr( { 'path': 'M' + this.circle_point.attrs.cx.toString() + ',' + this.circle.attrs.cy.toString() + 'L' + this.circle_point.attrs.cx.toString() + ',' + this.circle_point.attrs.cy.toString() } )
-                    this.hypotenuse.attr( { 'path': 'M' + this.circle.attrs.cx.toString() + ',' + this.circle.attrs.cy.toString() + 'L' + this.circle_point.attrs.cx.toString() + ',' + this.circle_point.attrs.cy.toString() } )
-
-                    this.sin_val = Math.cos( 2*Math.PI * this.x_value )
-                    this.cos_val = Math.sin( 2*Math.PI * this.x_value )
-                }
-            });
-
-            var tangle3 = new Tangle(ex3, {
-                initialize: function () {
-                    this.magnitudes = [4, 2]
-                    this.frequencies = [2, 1]
-                    this.x_value = 0
-                    this.phases = [0, 0]
-                    this.paper = new Raphael(document.getElementById('graph-3'), 700, 300)
-                    this.sine_waves = [this.paper.path(''), this.paper.path(''), this.paper.path('')]
-                    this.sine_waves[0].attr( { 'stroke': 'red', 'stroke-width': 3 } )
-                    this.sine_waves[1].attr( { 'stroke': 'blue', 'stroke-width': 3 } )
-                    this.sine_waves[2].attr( { 'stroke': 'purple', 'stroke-width': 3 } )
-                    this.circles = [this.paper.circle( 0, 0, 0 ), this.paper.circle( 0, 0, 0 )]
-                    this.circles[0].attr( { 'stroke-width': 2, 'stroke': 'red' } )
-                    this.circles[1].attr( { 'stroke-width': 2, 'stroke': 'blue' } )
-                    this.connecting_lines = [this.paper.rect( 0, 0, 0, 2 ), this.paper.rect( 0, 0, 0, 2 )]
-                    this.connecting_lines[0].attr( { 'stroke': 'red', 'fill': 'red' } )
-                    this.connecting_lines[1].attr( { 'stroke': 'blue', 'fill': 'blue' } )
-                    this.circle_points = [this.paper.circle( 0, 0, 7 ), this.paper.circle( 0, 0, 7 )]
-                    this.sine_points = [this.paper.circle( 0, 0, 7 ), this.paper.circle( 0, 0, 7 ), this.paper.circle( 0, 0, 7 )]
-
-                    for(var i = 0; i < this.circles.length; ++i) {
-                        eval('this.phases' + i.toString() + ' = ' + this.phases[i].toString())
-                        eval('this.magnitudes' + i.toString() + ' = ' + this.magnitudes[i].toString())
-                        eval('this.frequencies' + i.toString() + ' = ' + this.frequencies[i].toString())
-                    }
-                },
-                update: function () {
-                    for(var i = 0; i < this.circles.length; ++i) {
-                        eval('this.phases[' + i.toString() + '] = this.phases' + i.toString())
-                        eval('this.magnitudes[' + i.toString() + '] = this.magnitudes' + i.toString())
-                        eval('this.frequencies[' + i.toString() + '] = this.frequencies' + i.toString())
-                    }
-
-                    var width = this.paper.width - 10, height = this.paper.height
-                    var colors = ['red', 'blue']
-
-                    this.circles[0].attr( { 'cx': 7*20 + 10, 'cy': height/2, 'r': Math.abs(this.magnitudes[0]*20) } )
-                    for(var i = 1; i < this.circles.length; ++i) {
-                        this.circles[i].attr( { 'cx': this.circles[0].attrs.cx, 'cy': this.circles[0].attrs.cy, 'r': Math.abs(this.magnitudes[i]*20) } )
-                    }
-
-                    for(var i = 0; i < this.circle_points.length; i++) {
-                        this.circle_points[i].attr( { 'cx': this.circles[i].attrs.cx + this.circles[i].attrs.r*Math.cos(this.x_value*this.frequencies[i] + this.phases[i]), 'cy': this.circles[i].attrs.cy + this.circles[i].attrs.r*Math.sin(-this.x_value*this.frequencies[i] + this.phases[i]), 'fill': colors[i] } )
-                    }
-                    
-                    var y_val = height/2
-                    for(var j = 0; j < this.circles.length; ++j) {
-                        y_val += this.circles[j].attrs.r*Math.sin(-this.x_value*this.frequencies[j] - this.phases[j])
-                    }
-
-                    for(var i = 0; i < this.sine_points.length - 1; ++i) {
-                        this.sine_points[i].attr( { 'cx': width/2 + width/2*(this.x_value / (2*Math.PI)), 'cy': height/2 + this.circles[i].attrs.r*Math.sin(-this.x_value*this.frequencies[i] - this.phases[i]), 'fill': colors[i] } )
-                    }
-                    this.sine_points[this.sine_points.length - 1].attr( { 'cx': width/2 + width/2*(this.x_value / (2*Math.PI)), 'cy': y_val, 'fill': 'purple' } )
-
-
-                    for(var i = 0; i < this.connecting_lines.length; ++i) {
-                        this.connecting_lines[i].attr( { 'x': this.circle_points[i].attrs.cx, 'y': this.circle_points[i].attrs.cy, 'width': this.sine_points[i].attrs.cx - this.circle_points[i].attrs.cx } )
-                    }
-
-                    for(var wave_num = 0; wave_num < this.sine_waves.length - 1; ++wave_num) {
-                        var path_str = 'M' + width/2 + ',' + (this.magnitudes[wave_num]*20*Math.sin(2*Math.PI*0 / (width/2)*this.frequencies[wave_num] + this.phases[wave_num]) + height/2).toString()
-                        for(var i = 0; i < width/2; ++i) {
-                            var y_val = height/2
-                            y_val += this.circles[wave_num].attrs.r*Math.sin(-i*2*Math.PI/(width/2)*this.frequencies[wave_num] - this.phases[wave_num])
-                            path_str += 'L' + (width/2 + i).toString() + ',' + y_val.toString()
-                        }
-                        this.sine_waves[wave_num].attr( { 
-                            'path': path_str
-                        } )
-                    }
-
-                    var path_str_sum = 'M' + (width/2).toString() + ',' + (height/2).toString()
-                    for(var i = 0; i < width/2; ++i) {
-                        var y_val = height/2
-                        for(var j = 0; j < this.circles.length; ++j) {
-                            y_val += this.circles[j].attrs.r*Math.sin(-i*2*Math.PI/(width/2)*this.frequencies[j] - this.phases[j])
-                        }
-                        path_str_sum += 'L' + (width/2 + i).toString() + ',' + y_val.toString()
-                    }
-                    this.sine_waves[this.sine_waves.length - 1].attr( { 
-                        'path': path_str_sum
-                    } )
-
-                }
-            });
-
-            var tangle4 = new Tangle(ex4, {
-                initialize: function () {
-                    this.magnitudes = [4, 2]
-                    this.frequencies = [2, 1]
-                    this.x_value = 0
-                    this.phases = [0, 0]
-                    this.paper = new Raphael(document.getElementById('graph-4'), 700, 300)
-                    this.sine_wave = this.paper.path('')
-                    this.sine_wave.attr( { 'stroke-width': 2 } )
-                    this.circles = [this.paper.circle( 0, 0, 0 ), this.paper.circle( 0, 0, 0 )]
-                    this.circles[0].attr( { 'stroke-width': 2 } )
-                    this.circles[1].attr( { 'stroke-width': 2 } )
-                    this.connecting_line = this.paper.rect( 0, 0, 0, 2 )
-                    this.connecting_line.attr( { 'fill': 'black' } )
-                    this.circle_point = this.paper.circle( 0, 0, 7 )
-                    this.sine_point = this.paper.circle( 0, 0, 7 )
-
-                    for(var i = 0; i < this.circles.length; ++i) {
-                        eval('this.phases' + i.toString() + ' = ' + this.phases[i].toString())
-                        eval('this.magnitudes' + i.toString() + ' = ' + this.magnitudes[i].toString())
-                        eval('this.frequencies' + i.toString() + ' = ' + this.frequencies[i].toString())
-                    }
-                },
-                update: function () {
-                    for(var i = 0; i < this.circles.length; ++i) {
-                        eval('this.phases[' + i.toString() + '] = this.phases' + i.toString())
-                        eval('this.magnitudes[' + i.toString() + '] = this.magnitudes' + i.toString())
-                        eval('this.frequencies[' + i.toString() + '] = this.frequencies' + i.toString())
-                    }
-
-                    var width = this.paper.width - 10, height = this.paper.height
-
-                    this.circles[0].attr( { 'cx': 7*20 + 10, 'cy': height/2, 'r': Math.abs(this.magnitudes[0]*20) } )
-                    for(var i = 1; i < this.circles.length; ++i) {
-                        this.circles[i].attr( { 'cx': this.circles[i - 1].attrs.cx + this.circles[i - 1].attrs.r*Math.cos(this.x_value*this.frequencies[i - 1] + this.phases[i - 1]), 'cy': this.circles[i - 1].attrs.cy + this.circles[i - 1].attrs.r*Math.sin(-this.x_value*this.frequencies[i - 1] - this.phases[i - 1]), 'r': Math.abs(this.magnitudes[i]*20) } )
-                    }
-
-                    this.circle_point.attr( { 'cx': this.circles[this.circles.length - 1].attrs.cx + this.circles[this.circles.length - 1].attrs.r*Math.cos(this.x_value*this.frequencies[this.circles.length - 1] + this.phases[this.circles.length - 1]), 'cy': this.circles[this.circles.length - 1].attrs.cy + this.circles[this.circles.length - 1].attrs.r*Math.sin(-this.x_value*this.frequencies[this.circles.length - 1] + this.phases[this.circles.length - 1]), 'fill': '#00ccff' } )
-                    
-                    var y_val = height/2
-                    for(var j = 0; j < this.circles.length; ++j) {
-                        y_val += this.circles[j].attrs.r*Math.sin(-this.x_value*this.frequencies[j] - this.phases[j])
-                    }
-                    this.sine_point.attr( { 'cx': width/2 + width/2*(this.x_value / (2*Math.PI)), 'cy': y_val, 'fill': '#00ccff' } )
-
-                    this.connecting_line.attr( { 'x': this.circle_point.attrs.cx, 'y': this.circle_point.attrs.cy, 'width': this.sine_point.attrs.cx - this.circle_point.attrs.cx } )
-
-                    var path_str = 'M' + width/2 + ',' + (this.magnitudes[0]*20*Math.sin(2*Math.PI*0 / (width/2)*this.frequencies[0] + this.phases[0]) + height/2).toString()
-                    for(var i = 0; i < width/2; ++i) {
-                        var y_val = height/2
-                        for(var j = 0; j < this.circles.length; ++j) {
-                            y_val += this.circles[j].attrs.r*Math.sin(-i*2*Math.PI/(width/2)*this.frequencies[j] - this.phases[j])
-                        }
-                        path_str += 'L' + (width/2 + i).toString() + ',' + y_val.toString()
-                    }
-                    this.sine_wave.attr( { 
-                        'path': path_str
-                    } )
-                }
-            });
-
-        }
-
-    </script>
+    <!-- Image manipulation demo -->
+    <script type="text/javascript" src="spectrum.js"></script>
+    <script type="text/javascript" src="filter_fft.js"></script>
+    <script type="text/javascript" src="fft.js"></script>
 
 </head>
 
-<body onload="setUpTangle();">
+<body onload="setUpTangle(); init()">
 
-    <p id="ex1">Graph of f(<span class="TKAdjustableNumber" data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) = <span data-var="magnitude" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequency" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phase" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>)</p>
+    <h1>Fourier Transforms for Humans</h1>
+
+    <p style="margin-top: 100px" id="ex1">Picture of f(<span class="TKAdjustableNumber" data-format="%0.1f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) = <span data-var="magnitude" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequency" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.1f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phase" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>).  (Click and drag anything underlined in blue)</p>
     <div id="graph" resize="true"></div>
 
-    <p id="ex3">Real part of f(<span class="TKAdjustableNumber" data-format="%0.01f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span>) = <span data-var="magnitudes0" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies0" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases0" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>) + <span data-var="magnitudes1" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies1" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases1" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>)</p>
+    <p>This was a preliminary demo. I put it at the top before the introduction so that you (hopefully) wouldn't get bored and go away. The goal of this demo is to help you understand that circles and sine waves are really the same thing. There are four parameters you can adjust: the first controls which number we are plugging into the function, the second controls how wide the circle is, the third controls how fast around the circle we are going, and the fourth controls where on the circle we start.</p>
+
+    <div class="break"></div>
+
+    <h2>Introduction:</h2>
+    <p>Fourier transforms are an incredibly fascinating topic. They have uses in nearly every field of science and engineering.  Unfortunately, most textbooks and websites give you a very technical explanation of how they actually work.  They will usually ramble on about sums of complex exponentials and sinusoids.  They'll throw up a formula like INSERT_FORMULA_HERE, and then say "right, that's it! Now go forth and conquer".  But science and math are visual, kinesthetic displines (at least for those who understand them deeply).  <b>Form</b>ulas are a great way of representing ideas <b>form</b>ally, but they are usually not the best way of coming up with ideas or communicating your ideas to others.  They should come at the <em>end</em> of an investigation into a topic, not the beginning.  Only once I understand something in a concrete sense can I attempt to formalize it in abstract symbols.  Thankfully, computers exist which can make the process a little more visual and interactive.  What follows is my attempt to do just that.</p>
+
+    <div class="break"></div>
+
+    <p id="ex3">Picture of f(<span class="TKAdjustableNumber" data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span>) = <span data-var="magnitudes0" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies0" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases0" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>) + <span data-var="magnitudes1" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies1" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases1" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>)</p>
     <div id="graph-3" resize="true"></div>
+    <p>What's going on here? Well, it's exactly the same as before except now there are two circles, one red and one blue.  The purple curve on the right is the sum of the red and blue ones. It shows that if we have two sine waves and we add them together, we can get some really crazy looking curves.  Try messing around with the parameters to get a sense of what you can make.</p>
 
-    <p id="ex4">Real part of f(<span class="TKAdjustableNumber" data-format="%0.01f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span>) = <span data-var="magnitudes0" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies0" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases0" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>) + <span data-var="magnitudes1" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies1" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases1" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>)</p>
+    <div class="break"></div>
+
+    <p id="ex4">Picture of f(<span class="TKAdjustableNumber" data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span>) = <span data-var="magnitudes0" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies0" data-step="0.1" data-max="50" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases0" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>) + <span data-var="magnitudes1" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies1" data-step="0.1" data-max="50" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases1" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>)</p>
     <div id="graph-4" resize="true"></div>
+    <p>This demo is the same as the last one, but shows a more intuitive way of adding sine waves together: i.e. that you can just place the center of one circle on the edge of the other one and rotate them both with time. Try setting the same parameters on this example and the previous one and check that the results are the same. The purple line in the previous example should match the curve in this example.</p>
 
-    <p id="ex2">Graph of e^(i * <span class="TKAdjustableNumber" data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) = cos(<span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) + i*sin(<span data-format="%0.01f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) = <span data-format="%0.01f" data-var="sin_val" data-step="0.1" data-max="6.283" data-min="0"></span> + i*<span data-format="%0.01f" data-var="cos_val" data-step="0.1" data-max="6.283" data-min="0"></span></p>
+    <div class="break"></div>
+
+    <p id="ex5">Picture of f(<span class="TKAdjustableNumber" data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span>) = sin(2π * <span data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span> + <span data-var="phases0" data-format="%0.2f" class="TKAdjustableNumber" data-step="0.05" data-max="6.28" data-min="0"></span>) + sin(4π * <span data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span> + <span data-var="phases1" data-format="%0.2f" class="TKAdjustableNumber" data-step="0.05" data-max="6.28" data-min="0"></span>) + sin(6π * <span data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span> + <span data-var="phases2" data-format="%0.2f" class="TKAdjustableNumber" data-step="0.05" data-max="6.28" data-min="0"></span>) + sin(8π * <span data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span> + <span data-var="phases3" data-format="%0.2f" class="TKAdjustableNumber" data-step="0.05" data-max="6.28" data-min="0"></span>)</p>
+    <div id="graph-5" resize="true"></div>
+    <p>Here we have 4 circles.  Other than that, it's the exact same principle. I've also fixed the widths of the circles and the speed with which they rotate to make things simpler.  All we have to work with now is the offset, or starting point (sometimes called <em>phase</em>). With 4 circles you can get some really crazy looking curves! Seriously, try it. When you're done, here's a question: divide the graph into equal parts according to however many circles you have (here it's 4ths so I've divided the graph into 4 parts), and then set all 4 phase offsets to 1.5 (approx. π/2). Notice that there is a spike at the first one, and then at all other markings the value is 0. We can think of this as a representation of the sequence [spike,0,0,0].  Can you think of a way to represent the sequence [0,spike,0,0] (i.e. value of 0 at 0, a spike at 1/4, and 0 at 1/2 and 3/4)? How about [spike,spike,0,0]? Try it for a while and then read on for an explanation of the solution.</p>
+
+    <div class="break"></div>
+
+    <h2>Explanation and Generalization</h2>
+    <p>Okay, so how do we do it? Well, one thing you'll notice about circles is that if you keep going around you will eventually get back to where you started.  And that's the whole key really.  To move the spike over, all we need to do is start the circles</p>
+
+    <div class="break"></div>
+
+    <p id="ex2">Graph of e^(i * <span class="TKAdjustableNumber" data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) = cos(<span data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) + i*sin(<span data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) = <span data-format="%0.2f" data-var="sin_val" data-step="0.1" data-max="6.283" data-min="0"></span> + i*<span data-format="%0.2f" data-var="cos_val" data-step="0.1" data-max="6.283" data-min="0"></span></p>
     <div id="graph-2" resize="true"></div>
 
+    <div class="break"></div>
+
+    <p>At long last, an equation</p>
+
+    <div class="break"></div>
+
+    <p>Lots and lots of circles</p>
+    <div id="graph-6" resize="true" style="display: inline; margin-left: 15%"></div>
+    <div id="graph-7" resize="true" style="display: inline"></div>    
+
+    <div class="break"></div>
+
+    <h2>A Practical Application</h2>
+
+    <button style="margin-top: 50px; margin-left: 15%" onclick="playSound()" disabled>Start</button>
+    <button style="margin-top: 50px" onclick="stopSound()" disabled>Stop</button>
+
+    <div id="info">
+    </div>
+
+    <canvas id="canvasID" width="500" height="250" style="margin-left: 15%; display: inline-block">
+    </canvas>
+
+    <!-- Sliders and other controls will be added here -->
+    <div style="display: inline-block; width: auto; margin-left: 1%" id="controls"> 
+        <div> 
+            <input id="frequencySlider" type="range" min="0" max="1" step="0.01" value="0" style="height: 20px; width: 200px;" oninput="setFrequency()">
+            <span id="frequency-value" style="position:relative; top:-5px;">frequency = 434.78 Hz</span> 
+        </div> 
+        <br>  
+        <div> 
+            <input id="QSlider" type="range" min="0" max="20" step="0.01" value="0" style="height: 20px; width: 200px;" oninput="setQ()">
+            <span id="Q-value" style="position:relative; top:-5px;">Q = 5.57 dB</span> </div> <br>  
+        </div>
+    </div>
+
+    <p>We our discussion of the Fourier transform with a practical application.  How can any of this be used in real life? Click the "play" button to hear a piece of the solo from "Stairway to Heaven", and slide the knobs to control the parameters of what is known as a <em>band-pass filter</em>. The graphical illustration is a visualization of what the band-pass filter does. The x-axis represents frequency and the y-axis represents how loud that frequency comes through.  The job of the band-pass filter is to let some frequencies through, and tell the other ones to quiet down.</p>
+    <br/>
+    <p>Try setting the Q factor to around 7 or 8 and sliding the frequency knob from low to high. Another thing to try is to set the frequency to about 80 or 90 Hz and slide the Q knob quickly from 0 to about 7 or 8. It kind of sounds like someone has just shut a door.  This is because doors and windows are known to be good at letting low frequencies through while shutting out high frequencies.  You can also set the frequency at about 1800-2000 and the Q knob at around 15, and it sounds like an old telephone. This is because telephones used to use this trick of discarding high and low frequencies in order to save on the amount of information they had to transmit, when the data bandwidth of telephone lines was not as good as it is today.</p>
+
 </body>
+
+<script type="text/javascript" src="audio_api.js"></script>
 
 </html>

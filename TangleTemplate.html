@@ -37,6 +37,15 @@
     }
     </style>
     
+    <!-- MathJAX -->
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    </script>
+    <script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+
+    <!-- Raphael -->
     <script type="text/javascript" src="raphael.js"></script>
 
     <!-- Tangle -->
@@ -65,53 +74,205 @@
 
 <body onload="setUpTangle(); init()">
 
-    <h1>Fourier Transforms for Humans</h1>
+    <h1>The Fourier Transform</h1>
+    <h2>An Interactive Guide</h2>
 
-    <p style="margin-top: 100px" id="ex1">Picture of f(<span class="TKAdjustableNumber" data-format="%0.1f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) = <span data-var="magnitude" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequency" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.1f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phase" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>).  (Click and drag anything underlined in blue)</p>
+    <p style="margin-top: 100px">Click and drag anything underlined.</p>
+    <p id="ex1">
+    On the left of the diagram below is a circle with radius 
+        <span data-var="magnitude" data-step="0.1" data-max="7.0" data-min="0" data-format="%0.1f" class="TKAdjustableNumber" style="color: #0099cc; border-bottom: 1px dashed #33b5e5;"></span>. 
+    If you go around the circle 
+        <span data-var="frequency" style="color: #aa66cc; border-bottom: 1px dashed #93c;" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> 
+    times starting at 
+        <span data-var="phase_percent" style="color: #99cc00; border-bottom: 1px dashed #669900;" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0">%</span> 
+    of the way around, then at 
+        <span class="TKAdjustableNumber" data-format="%1f" data-var="x_value_percent" style="color: #fb3; border-bottom: 1px dashed #f80;"  data-step="1" data-max="100" data-min="0">%</span> 
+    of the way through your journey the height of the purple dots will be:
+    <br>
+        <span data-var="magnitude" style="color: #0099cc; border-bottom: 1px dashed #33b5e5;" data-step="0.1" data-max="7.0" data-min="0" data-format="%0.1f" class="TKAdjustableNumber"></span> • sin(<span data-var="frequency" style="color: #aa66cc; border-bottom: 1px dashed #93c;" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> 
+    • 
+        <span data-format="%0.1f" data-var="x_value_percent" style="color: #fb3; border-bottom: 1px dashed #f80;" data-step="1" data-max="100" data-min="0" class="TKAdjustableNumber">% of 2$\pi$</span>
+    + 
+        <span data-var="phase_percent" style="color: #99cc00; border-bottom: 1px dashed #669900;" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0">% of 2$\pi$</span>).
+    </p>
     <div id="graph" resize="true"></div>
 
-    <p>This was a preliminary demo. I put it at the top before the introduction so that you (hopefully) wouldn't get bored and go away. The goal of this demo is to help you understand that circles and sine waves are really the same thing. There are four parameters you can adjust: the first controls which number we are plugging into the function, the second controls how wide the circle is, the third controls how fast around the circle we are going, and the fourth controls where on the circle we start.</p>
+    <p>This was a preliminary demo. I put it at the top before the introduction so that you (hopefully) wouldn't get bored and go away. The goal of this demo is to help you understand that circles and sine waves are really the same thing. The percentages in the sine function are in terms of 2$\pi$ because 2$\pi$ is the circumference of a circle with radius 1;  therefore, 2$\pi$ is 100% of the way around the circle</p>
 
     <div class="break"></div>
 
     <h2>Introduction:</h2>
-    <p>Fourier transforms are an incredibly fascinating topic. They have uses in nearly every field of science and engineering.  Unfortunately, most textbooks and websites give you a very technical explanation of how they actually work.  They will usually ramble on about sums of complex exponentials and sinusoids.  They'll throw up a formula like INSERT_FORMULA_HERE, and then say "right, that's it! Now go forth and conquer".  But science and math are visual, kinesthetic displines (at least for those who understand them deeply).  <b>Form</b>ulas are a great way of representing ideas <b>form</b>ally, but they are usually not the best way of coming up with ideas or communicating your ideas to others.  They should come at the <em>end</em> of an investigation into a topic, not the beginning.  Only once I understand something in a concrete sense can I attempt to formalize it in abstract symbols.  Thankfully, computers exist which can make the process a little more visual and interactive.  What follows is my attempt to do just that.</p>
+    <p>Fourier transforms are an incredibly fascinating topic. They have uses in nearly every field of science and engineering.  Unfortunately, most textbooks and websites give you a very technical explanation of how they actually work. They'll usually throw up a formula like $X_k = \sum\limits_{n=0}^{N-1} x_n e^{-i 2 \pi k n / N}$, and then say "right, that's it! Now go forth and conquer".  But science and math are visual, kinesthetic displines (at least when it comes to intuition and understanding).  <b>Form</b>ulas are a great way of representing ideas <b>form</b>ally, but they are usually not the best way of coming up with ideas or communicating your ideas to others.  They should come at the <em>end</em> of an investigation into a topic, not the beginning.  Only once I understand something in a concrete sense can I attempt to formalize it in abstract symbols.  Thankfully, computers exist which can make the process a little more visual and interactive.  What follows is my attempt to do just that.</p> 
+    <p>If you don't know what the goal of a Fourier transform is, I promise to explain a little later. I would prefer the goal to emerge naturally from our exploration of circles and sine waves, rather than tell you what the goal is up front and have it seem potentially arbitrary. For now let's keep building on this idea that sine waves can be represented as circles.</p>
 
     <div class="break"></div>
 
-    <p id="ex3">Picture of f(<span class="TKAdjustableNumber" data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span>) = <span data-var="magnitudes0" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies0" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases0" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>) + <span data-var="magnitudes1" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies1" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases1" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>)</p>
+    <p id="ex3">
+        On the left of the diagram below are two circles with radii 
+            <span data-var="magnitudes0" data-step="0.1" data-max="7.0" data-min="0" data-format="%0.1f" class="TKAdjustableNumber" style="color: #33b5e5; border-bottom: 1px dashed #33b5e5;"></span> 
+        and 
+            <span data-var="magnitudes1" data-step="0.1" data-max="7.0" data-min="0" data-format="%0.1f" class="TKAdjustableNumber" style="color: #07a; border-bottom: 1px dashed #07a;"></span>. 
+        If you go around the red circle 
+            <span data-var="frequencies0" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber" style="color: #a6c; border-bottom: 1px dashed #93c;"></span>
+        times starting at 
+            <span data-var="phases0_percent" data-format="%0.1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0" style="color: #99cc00; border-bottom: 1px dashed #669900;">%</span>
+        of the way around the circle, and around the blue circle
+            <span data-var="frequencies1" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber" style="color: #71a; border-bottom: 1px dashed #609;"></span>
+        times starting at
+            <span data-var="phases1_percent" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0" style="color: #590; border-bottom: 1px dashed #690;">%</span>
+        of the way around the circle and then add the heights of the red and blue dots, then at
+            <span class="TKAdjustableNumber" data-format="%0.1f" data-var="x_value_percent" style="color: #fb3; border-bottom: 1px dashed #f80;"  data-step="1" data-max="100" data-min="0">%</span>
+        of the way through your journey you will get:
+        <br>
+            <span data-var="magnitudes0" data-step="0.1" data-max="7.0" data-min="-0.0" data-format="%0.1f" class="TKAdjustableNumber"  style="color: #09c; border-bottom: 1px dashed #33b5e5;"></span> 
+        • sin(
+            <span data-var="frequencies0" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber" style="color: #aa66cc; border-bottom: 1px dashed #93c;"></span> 
+        • 
+            <span data-format="%0.2f" data-var="x_value_percent" data-step="1" data-max="100" data-min="0" style="color: #fb3; border-bottom: 1px dashed #f80;" class="TKAdjustableNumber">% of 2$\pi$</span> 
+        + 
+            <span data-var="phases0_percent" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0" style="color: #99cc00; border-bottom: 1px dashed #669900;">% of 2$\pi$</span>) 
+        + 
+            <span data-var="magnitudes1" data-step="0.1" data-max="7.0" data-min="0" data-format="%0.1f" class="TKAdjustableNumber"  style="color: #069; border-bottom: 1px dashed #33b5e5;"></span> 
+        • sin(
+            <span data-var="frequencies1" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber" style="color: #71a; border-bottom: 1px dashed #609;"></span> 
+        • 
+            <span data-format="%0.2f" data-var="x_value_percent" data-step="1" data-max="100" data-min="0" style="color: #fb3; border-bottom: 1px dashed #f80;" class="TKAdjustableNumber">% of 2$\pi$</span>
+        + 
+            <span data-var="phases1_percent" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0" style="color: #590; border-bottom: 1px dashed #690;">% of 2$\pi$</span>
+        ).  This is the height of the purple dot.
+    </p>
     <div id="graph-3" resize="true"></div>
-    <p>What's going on here? Well, it's exactly the same as before except now there are two circles, one red and one blue.  The purple curve on the right is the sum of the red and blue ones. It shows that if we have two sine waves and we add them together, we can get some really crazy looking curves.  Try messing around with the parameters to get a sense of what you can make.</p>
+    <p>To reiterate, we just have two circles now instead of one. The purple curve on the right is the sum of the red and blue ones. This demo shows that if we have two sine waves and we add them together, we can get some slightly more interesting curves.  Try messing around with all of the parameters to get a sense of what you can make. For example, can you get the two circles to "cancel out" so that the blue curve is always 0? (<em>Hint: start by setting the radii of the two circles to be the same number</em>)</p>
 
     <div class="break"></div>
 
-    <p id="ex4">Picture of f(<span class="TKAdjustableNumber" data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span>) = <span data-var="magnitudes0" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies0" data-step="0.1" data-max="50" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases0" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>) + <span data-var="magnitudes1" data-step="0.1" data-max="7.0" data-min="-7.0" data-format="%0.1f" class="TKAdjustableNumber"></span> * sin(2π * <span data-var="frequencies1" data-step="0.1" data-max="50" data-format="%0.1f" class="TKAdjustableNumber"></span> * <span data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span> + <span data-var="phases1" data-format="%0.1f" class="TKAdjustableNumber" data-step="0.1" data-max="6.28" data-min="0"></span>)</p>
+    <p id="ex4">
+        Here is a more intuitive way of adding sine waves together: just place the center of one circle on the edge of the other one and rotate them both with time.  The two circles on the left have radii
+            <span data-var="magnitudes0" data-step="0.1" data-max="7.0" data-min="0" data-format="%0.1f" class="TKAdjustableNumber" style="color: #33b5e5; border-bottom: 1px dashed #33b5e5;"></span> 
+        and 
+            <span data-var="magnitudes1" data-step="0.1" data-max="7.0" data-min="0" data-format="%0.1f" class="TKAdjustableNumber" style="color: #07a; border-bottom: 1px dashed #07a;"></span>. 
+        If you rotate the blue circle around the red circle 
+            <span data-var="frequencies0" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber" style="color: #a6c; border-bottom: 1px dashed #93c;"></span>
+        times starting at 
+            <span data-var="phases0_percent" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0" style="color: #99cc00; border-bottom: 1px dashed #669900;">%</span>
+        of the way around the red circle, and rotate the purple dot around the blue circle
+            <span data-var="frequencies1" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber" style="color: #71a; border-bottom: 1px dashed #609;"></span>
+        times starting at
+            <span data-var="phases1_percent" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0" style="color: #590; border-bottom: 1px dashed #690;">%</span>
+        of the way around the blue circle, then at
+            <span class="TKAdjustableNumber" data-format="%1f" data-var="x_value_percent" style="color: #fb3; border-bottom: 1px dashed #f80;"  data-step="1" data-max="100" data-min="0">%</span>
+        of the way through your journey the height of the purple dot will be:
+        <br>
+            <span data-var="magnitudes0" data-step="0.1" data-max="7.0" data-min="0" data-format="%0.1f" class="TKAdjustableNumber"  style="color: #09c; border-bottom: 1px dashed #33b5e5;"></span> 
+        • sin(
+            <span data-var="frequencies0" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber" style="color: #aa66cc; border-bottom: 1px dashed #93c;"></span> 
+        • 
+            <span data-format="%1f" data-var="x_value_percent" data-step="1" data-max="100" data-min="0" style="color: #fb3; border-bottom: 1px dashed #f80;" class="TKAdjustableNumber">% of 2$\pi$</span> 
+        + 
+            <span data-var="phases0_percent" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0" style="color: #99cc00; border-bottom: 1px dashed #669900;">% of 2$\pi$</span>) 
+        + 
+            <span data-var="magnitudes1" data-step="0.1" data-max="7.0" data-min="0" data-format="%0.1f" class="TKAdjustableNumber"  style="color: #069; border-bottom: 1px dashed #33b5e5;"></span> 
+        • sin(
+            <span data-var="frequencies1" data-step="0.1" data-max="5" data-format="%0.1f" class="TKAdjustableNumber" style="color: #71a; border-bottom: 1px dashed #609;"></span> 
+        • 
+            <span data-format="%1f" data-var="x_value_percent" data-step="1" data-max="100" data-min="0" style="color: #fb3; border-bottom: 1px dashed #f80;" class="TKAdjustableNumber">% of 2$\pi$</span>
+        + 
+            <span data-var="phases1_percent" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0" style="color: #590; border-bottom: 1px dashed #690;">% of 2$\pi$</span>
+        ).
+
+        </p>
     <div id="graph-4" resize="true"></div>
-    <p>This demo is the same as the last one, but shows a more intuitive way of adding sine waves together: i.e. that you can just place the center of one circle on the edge of the other one and rotate them both with time. Try setting the same parameters on this example and the previous one and check that the results are the same. The purple line in the previous example should match the curve in this example.</p>
+    <p>Try setting the same parameters on this example and the previous one and check the results. The two purple curves should look the same.</p>
 
     <div class="break"></div>
 
-    <p id="ex5">Picture of f(<span class="TKAdjustableNumber" data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span>) = sin(2π * <span data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span> + <span data-var="phases0" data-format="%0.2f" class="TKAdjustableNumber" data-step="0.05" data-max="6.28" data-min="0"></span>) + sin(4π * <span data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span> + <span data-var="phases1" data-format="%0.2f" class="TKAdjustableNumber" data-step="0.05" data-max="6.28" data-min="0"></span>) + sin(6π * <span data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span> + <span data-var="phases2" data-format="%0.2f" class="TKAdjustableNumber" data-step="0.05" data-max="6.28" data-min="0"></span>) + sin(8π * <span data-format="%0.2f" data-var="x_value" data-step="0.05" data-max="6.283" data-min="0"></span> + <span data-var="phases3" data-format="%0.2f" class="TKAdjustableNumber" data-step="0.05" data-max="6.28" data-min="0"></span>)</p>
+    <p id="ex5">
+        Let's extend our idea even further, so that now we're adding 4 circles. For the sake of brevity, I've fixed the widths of all of the circles to be 1. I've also fixed the number of number of rotations each circle completes. The inner-most circle will complete one rotation, the next one out will complete 2 rotations, and so on. The reason for this will become clear in the next section. All we have to work with now is the offset, or starting point, which is sometimes called the <em>phase</em>.  Change each of the phases individually to get a sense of what they do.
+        At
+            <span data-format="%1f" data-var="x_value_percent" data-step="1" data-max="100" data-min="0" class="TKAdjustableNumber" style="color: #fb3; border-bottom: 1px dashed #f80;">%</span>
+        of the way to 2$\pi$, the height of the purple dots will be:
+        <br>
+        sin(<span data-format="%1f" data-var="x_value_percent" data-step="1" data-max="100" data-min="0" class="TKAdjustableNumber" style="color: #fb3; border-bottom: 1px dashed #f80;">% of 2$\pi$</span> 
+        + 
+            <span data-var="phases0_percent" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0">% of 2$\pi$</span>
+        ) + sin(2 •
+            <span data-format="%1f" data-var="x_value_percent" data-step="1" data-max="100" data-min="0" class="TKAdjustableNumber" style="color: #fb3; border-bottom: 1px dashed #f80;">% of 2$\pi$</span> 
+        + 
+            <span data-var="phases1_percent" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0">% of 2$\pi$</span>
+        ) + sin(3 •
+            <span data-format="%1f" data-var="x_value_percent" data-step="1" data-max="100" data-min="0" class="TKAdjustableNumber" style="color: #fb3; border-bottom: 1px dashed #f80;">% of 2$\pi$</span> 
+        + 
+            <span data-var="phases2_percent" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0">% of 2$\pi$</span>
+        ) + sin(4 •
+            <span data-format="%1f" data-var="x_value_percent" data-step="1" data-max="100" data-min="0" class="TKAdjustableNumber" style="color: #fb3; border-bottom: 1px dashed #f80;">% of 2$\pi$</span> 
+        + 
+            <span data-var="phases3_percent" data-format="%1f" class="TKAdjustableNumber" data-step="1" data-max="100" data-min="0">% of 2$\pi$</span>
+        )
+    </p>
     <div id="graph-5" resize="true"></div>
-    <p>Here we have 4 circles.  Other than that, it's the exact same principle. I've also fixed the widths of the circles and the speed with which they rotate to make things simpler.  All we have to work with now is the offset, or starting point (sometimes called <em>phase</em>). With 4 circles you can get some really crazy looking curves! Seriously, try it. When you're done, here's a question: divide the graph into equal parts according to however many circles you have (here it's 4ths so I've divided the graph into 4 parts), and then set all 4 phase offsets to 1.5 (approx. π/2). Notice that there is a spike at the first one, and then at all other markings the value is 0. We can think of this as a representation of the sequence [spike,0,0,0].  Can you think of a way to represent the sequence [0,spike,0,0] (i.e. value of 0 at 0, a spike at 1/4, and 0 at 1/2 and 3/4)? How about [spike,spike,0,0]? Try it for a while and then read on for an explanation of the solution.</p>
+    <p>With 4 circles you can get some really crazy looking curves! Seriously, try it. When you're done, try this: set all 4 phase offsets to 25% of 2$\pi$. Notice that there is a spike (the height of the purple dot is greater than 0) at the first vertical marker, and then at all other markers the value is 0. We can think of this as a representation of the sequence [<em>spike</em>,0,0,0].  Can you think of a way to represent the sequence [0,<em>spike</em>,0,0] (i.e. a spike at the 2nd marker, and 0 at all the other ones)? How about [<em>spike</em>,<em>spike</em>,0,0]? Try it for a while and then read on for an explanation of the solution.</p>
 
     <div class="break"></div>
 
     <h2>Explanation and Generalization</h2>
-    <p>Okay, so how do we do it? Well, one thing you'll notice about circles is that if you keep going around you will eventually get back to where you started.  And that's the whole key really.  To move the spike over, all we need to do is start the circles</p>
+    <p>
+        Okay, so how do we do it? One thing we can notice is that whenever there's a spike it's pretty easy to see why -- we just have all of the circles stacked on top of one another, with the purple dot on top.  Then the purple dot is at the highest point it can be. So in order to get a spike at 25%, just drag any of the orange numbers until it says "25% of 2$\pi$", and then start adjusting the phase offsets until each circle is on top of the previous one.  At 25% of the way to 2$\pi$, the blue circle is on top of the red circle if you set the first offset of 0%.  The yellow circle is on top of the blue circle if you set the second offset to 75%, the green circle will be on top of the yellow cicle if you set the third offset to 50%, and purple dot is on top of the green circle if you set the fourth offset to 25%. So with offsets of 0%, 75%, 50%, and 25%, we have successfully moved the spike over to the second vertical marker. You can figure out how to get spikes at the third or fourth markers in the same way.
+    </p>
+    <p>
+        What about the other sequence we mentioned, [<em>spike</em>,<em>spike</em>,0,0]? This sequence can just be viewed as the sum of the sequences [<em>spike</em>,0,0,0] and [0,<em>spike</em>,0,0].  Let's try it out:
+    
+    </p>
+        <p style="display: inline; margin-right: 0;">[<em>spike</em>,0,0,0] =</p>
+        <img src="1000.png" style="display: inline; margin-left: 0; margin-right: 0; width: 20%;"></img>
+        <p style="display: inline; margin-left: 0">= $\sin(x + \frac{\pi}{2}) + \sin(2x + \frac{\pi}{2}) + \sin(3x + \frac{\pi}{2}) + \sin(4x + \frac{\pi}{2})$
+    </p>
+    
+    <p style="text-align: center; font-size: 200%">+</p>
+    
+    <p style="display: inline; margin-right: 0">
+        [0,<em>spike</em>,0,0] = </p>
+    <img src="0100.png" style="display: inline; margin-left: 0; margin-right: 0; width: 20%;"></img>
+    <p style="display: inline; margin-left: 0"> = $\sin(x) + \sin(2x + \frac{3\pi}{2}) + \sin(3x + \pi) + \sin(4x + \frac{\pi}{2})$</p>
+    </p>
+    
+    <p style="text-align: center; font-size: 200%">=</p>
+    
+    <p style="display: inline; margin-right: 0">
+        [<em>spike</em>,<em>spike</em>,0,0] = </p>
+    <img src="1100.png" style="display: inline; margin-left: 0; margin-right: 0; width: 20%;"></img>
+    <p style="display: inline; margin-left: 0"> = $\sin(x) - \sin(3x) + \sin(x + \frac{\pi}{2}) + \sin(3x + \frac{pi}{2}) + 2\sin(4x + \frac{\pi}{2})$</p>
+    
+    <p>
+        And there you have it. I have finally taken to using fractional values of pi instead of percentages, and using <em>x</em> as our variable but everything else is the same. Using this method of finding out how to get individual spikes and then adding spikes together, we can actually get any combination of 4 spikes using 4 circles. In fact, we can have as many spikes as we want. In general, we can get any combination of <em>n</em> spikes using <em>n</em> circles. All we have to do is figure out how to get each individual spike, and then scale them and add them up to produce the final answer. Now the point of the Fourier series starts to emerge: <em>maybe with enough circles, we can approximate any arbitary function</em>.
+    </p>
 
     <div class="break"></div>
 
-    <p id="ex2">Graph of e^(i * <span class="TKAdjustableNumber" data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) = cos(<span data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) + i*sin(<span data-format="%0.2f" data-var="x_value" data-step="0.1" data-max="6.283" data-min="0"></span>) = <span data-format="%0.2f" data-var="sin_val" data-step="0.1" data-max="6.283" data-min="0"></span> + i*<span data-format="%0.2f" data-var="cos_val" data-step="0.1" data-max="6.283" data-min="0"></span></p>
+    <p id="ex2">
+        Before we lock the final pieces into place, we need to formalize one more thing. Up until now, we've been working exclusively with sine waves as representations of travelling around a "circle". Mathematicians usually like to represent this circle as a complex exponential. Complex just means the number is a mixture of real and imaginary parts, and exponential means that it involves <b>e</b> raised to a power. There's a truly amazing formula which says that $e^{ix} = \cos{(x)} + i\sin{(x)}$.  We can use this to represent any rotation around our circle as a complex exponential.
+        
+        The picture below is a visual representation of the fact that 
+
+        $e^{(i}$
+            <sup>• <span class="TKAdjustableNumber" data-format="%1f" data-var="x_value_percent" data-step="1" data-max="100" data-min="0">% of $2 \pi$</span>)</sup>
+         = $\cos$(
+            <span data-format="%1f" data-var="x_value_percent" data-step="1" data-max="100" data-min="0">% of 2$\pi$</span>
+        ) + $i \sin($
+            <span data-format="%1f" data-var="x_value_percent" data-step="0.1" data-max="6.283" data-min="0">% of 2$\pi$</span>
+        ), where the red line represents the cosine part and the blue line represents the sine part.
+    </p>
     <div id="graph-2" resize="true"></div>
 
     <div class="break"></div>
 
-    <p>At long last, an equation</p>
+    <p>
+        For those of you who feel that this explanation has not been nearly mathematical enough, I present the following formula (taken from an excellent <a href="http://www.altdevblogaday.com/2011/05/17/understanding-the-fourier-transform/">blog post by Stuart Riffle</a>). It is exactly the application of the ideas which have been explained to this point, in more formal syntax.  
+    </p>
+    <img src="DerivedDFT.png" style="margin-left: 35%; margin-right: 35%; width: 30%">
 
     <div class="break"></div>
 
-    <p>Lots and lots of circles</p>
+    <p>Below is an application of this general formula to a plot with 16 discrete points. Click and drag your mouse anywhere in the rectangle to "draw" the location of these points.  Notice how the function always goes exactly through every one of the points, although it may look somewhat strange in between.</p>
     <div id="graph-6" resize="true" style="display: inline; margin-left: 15%"></div>
     <div id="graph-7" resize="true" style="display: inline"></div>    
 
@@ -119,7 +280,7 @@
 
     <h2>A Practical Application</h2>
 
-    <button style="margin-top: 50px; margin-left: 15%" onclick="playSound()" disabled>Start</button>
+    <button style="margin-top: 50px; margin-left: 15%" onclick="playSound()" disabled>Play</button>
     <button style="margin-top: 50px" onclick="stopSound()" disabled>Stop</button>
 
     <div id="info">
@@ -141,9 +302,9 @@
         </div>
     </div>
 
-    <p>We our discussion of the Fourier transform with a practical application.  How can any of this be used in real life? Click the "play" button to hear a piece of the solo from "Stairway to Heaven", and slide the knobs to control the parameters of what is known as a <em>band-pass filter</em>. The graphical illustration is a visualization of what the band-pass filter does. The x-axis represents frequency and the y-axis represents how loud that frequency comes through.  The job of the band-pass filter is to let some frequencies through, and tell the other ones to quiet down.</p>
+    <p>We end our discussion of the Fourier transform with a practical application.  How can any of this be used in real life? Click the play button to hear a piece of the solo from "Stairway to Heaven", and slide the knobs to control the parameters of what is known as a <em>band-pass filter</em>. The graphical illustration is a visualization of what the band-pass filter does. The x-axis represents frequency and the y-axis represents how loud that frequency comes through.  The job of the band-pass filter is to let some frequencies through, and tell the other ones to quiet down. It's the way that a car stereo knows how boost the bass, for example.</p>
     <br/>
-    <p>Try setting the Q factor to around 7 or 8 and sliding the frequency knob from low to high. Another thing to try is to set the frequency to about 80 or 90 Hz and slide the Q knob quickly from 0 to about 7 or 8. It kind of sounds like someone has just shut a door.  This is because doors and windows are known to be good at letting low frequencies through while shutting out high frequencies.  You can also set the frequency at about 1800-2000 and the Q knob at around 15, and it sounds like an old telephone. This is because telephones used to use this trick of discarding high and low frequencies in order to save on the amount of information they had to transmit, when the data bandwidth of telephone lines was not as good as it is today.</p>
+    <p>Try setting the Q factor to around 7 or 8 and sliding the frequency knob from low to high to get a sense of what is happening. Another thing to try is to set the frequency to about 80 or 90 Hz and slide the Q knob quickly from 0 to about 7 or 8. It kind of sounds like someone has just shut a door.  This is because doors and windows are known to be good at letting low frequencies through while shutting out high frequencies.  You can also set the frequency at about 1800-2000 and the Q knob at around 15, and it sounds like someone is playing the song to you through an old telephone. This is because telephones used to use this trick of discarding high and low frequencies in order to save on the amount of information they had to transmit, when the data bandwidth of telephone lines was not as good as it is today.</p>
 
 </body>
 
